@@ -1,0 +1,13 @@
+{
+    "name": "jangaricco/jans",
+    "authors": [
+        {
+            "name": "Junji Yoshioka",
+            "email": "jangareed91@yahoo.co.jp"
+        }
+    ],
+    "require": {},
+    "require-dev": {
+        "phpunit/phpunit": "8.*"
+    }
+}
