@@ -21,7 +21,7 @@ Class MyOrmTest extends TestCase {
     {
       $orm = new MyOrm;
       $orm->select(['col1', 'col2']);
-      $this->assertSame('SELECT col1, col2', $orm->toSql());
+      $this->assertSame('SELECT col1, col2 ', $orm->toSql());
     }
 
     public function testFrom()

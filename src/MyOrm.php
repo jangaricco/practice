@@ -4,28 +4,24 @@ namespace jans;
 
 Class MyOrm {
   private $select = [];
+  private $from = "";
 
   public function toSql()
   {
     if($this->select){
-      if($this->from){
-        $sql = $this->select.$this->from;
-      }else{
-        $sql = $this->select;
-      }
+      $sql = $this->select;
     }else{
-      if($this->from){
-        $sql = 'SELECT 1 '.$this->from;
-      }else{
-        $sql = 'SELECT 1';
-      }
+      $sql = 'SELECT 1';
+    }
+    if($this->from){
+      $sql = $sql.$this->from;
     }
     Return $sql;
   }
 
   public function select($columns)
   {
-    $col = is_array($columns) ? implode(", ", $columns) : $columns[0];
+    $col = implode(", ", $columns);
     $sql = 'SELECT '.$col.' ';
     $this->select = $sql;
   }
