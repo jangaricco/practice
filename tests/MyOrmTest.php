@@ -56,4 +56,16 @@ Class MyOrmTest extends TestCase {
       $this->assertSame('SELECT 1 FROM users WHERE id IN (?, ?, ?)', $orm->from('users')->whereIn('id', [1, 2, 3])->toSql());
       $this->assertSame([1, 2, 3], $orm->getBindings());
     }
+
+    public function testOrWhere()
+    {
+      $orm = new MyOrm;
+      $this->assertSame('SELECT 1 FROM users WHERE last_name = ? OR first_name = ?', $orm->from('users')->where('last_name', 'tanaka')->orWhere('first_name', 'tarou')->toSql());
+    }
+
+    public function testWhereNull()
+    {
+      $orm = new MyOrm;
+      $this->assertSame('SELECT 1 FROM users WHERE last_name IS NULL', $orm->from('users')->whereNull('last_name')->toSql());
+    }
 }

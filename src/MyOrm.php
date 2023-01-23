@@ -27,6 +27,9 @@ Class MyOrm {
     if($this->whereIn){
       $sql = $sql.' '.$this->whereIn;
     }
+    if($this->whereNull){
+      $sql = $sql.' '.$this->whereNull;
+    }
     return $sql;
   }
 
@@ -75,5 +78,31 @@ Class MyOrm {
     if($this->whereIn){
       return $this->values;
     }
+  }
+
+  public function orWhere($col, $value)
+  {
+    if($this->where){
+      $sql = $this->where.' OR '.$col.' = '.'?';
+      $this->where = $sql;
+      $this->values[] = $value;
+    }else{
+      $sql = 'WHERE '.$col.' = '.'?';
+      $this->where = $sql;
+      $this->values = [$value];
+    }
+    return $this;
+  }
+
+  public function whereNull($col)
+  {
+    if($this->where){
+      $sql = $this->where.' AND '.$col.' IS NULL';
+      $this->whereNull = $sql;
+    }else{
+      $sql = 'WHERE '.$col.' IS NULL';
+      $this->whereNull = $sql;
+    }
+    return $this;
   }
 }
