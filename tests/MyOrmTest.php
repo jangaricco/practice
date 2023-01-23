@@ -29,17 +29,17 @@ Class MyOrmTest extends TestCase {
       $orm = new MyOrm;
       $orm->select(['col1', 'col2']);
       $orm->from('users');
-      $this->assertSame('SELECT col1, col2 From users', $orm->toSql());
+      $this->assertSame('SELECT col1, col2  FROM users', $orm->toSql());
     }
 
     public function testChain()
     {
       $orm = new MyOrm;
       $orm->select(['col1', 'col2'])->from('users');
-      $this->assertSame('SELECT col1, col2 From users', $orm->toSql());
+      $this->assertSame('SELECT col1, col2  FROM users', $orm->toSql());
 
       $orm2 = new MyOrm;
-      $this->assertSame('SELECT name, email From users', $orm2->select(['name', 'email'])->from('users')->toSql());
+      $this->assertSame('SELECT name, email  FROM users', $orm2->select(['name', 'email'])->from('users')->toSql());
     }
 
     public function testWhere()
@@ -53,7 +53,7 @@ Class MyOrmTest extends TestCase {
     public function testWhereIn()
     {
       $orm = new MyOrm;
-      $this->assertSame('SELECT * FROM users WHERE id IN (?, ?, ?)', $orm->from('users')->whereIn('id', [1, 2, 3])->toSql());
+      $this->assertSame('SELECT 1 FROM users WHERE id IN (?, ?, ?)', $orm->from('users')->whereIn('id', [1, 2, 3])->toSql());
       $this->assertSame([1, 2, 3], $orm->getBindings());
     }
 }

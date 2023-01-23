@@ -9,6 +9,7 @@ Class MyOrm {
   private $value;
   private $values = [];
   private $where = "";
+  private $whereIn = "";
 
   public function toSql()
   {
@@ -22,6 +23,9 @@ Class MyOrm {
     }
     if($this->where){
       $sql = $sql.' '.$this->where;
+    }
+    if($this->whereIn){
+      $sql = $sql.' '.$this->whereIn;
     }
     return $sql;
   }
@@ -57,12 +61,18 @@ Class MyOrm {
 
   public function whereIn($col, $values)
   {
-    $sql = 'WHERE '.$col.' IN '.implode(', ', array_map(function () { return '?'; }, $values));
+    $sql = 'WHERE '.$col.' IN ('.implode(', ', array_map(function () { return '?'; }, $values)).')';
+    $this->whereIn = $sql;
+    $this->values = $values;
+    return $this;
   }
 
   public function getBindings()
   {
     if($this->where){
+      return $this->values;
+    }
+    if($this->whereIn){
       return $this->values;
     }
   }
