@@ -9,7 +9,7 @@ Class MyOrm {
   private $value;
   private $values = [];
   private $where = "";
-  private $whereIn = "";
+  private $whereNull = "";
 
   public function toSql()
   {
@@ -23,9 +23,6 @@ Class MyOrm {
     }
     if($this->where){
       $sql = $sql.' '.$this->where;
-    }
-    if($this->whereIn){
-      $sql = $sql.' '.$this->whereIn;
     }
     if($this->whereNull){
       $sql = $sql.' '.$this->whereNull;
@@ -52,30 +49,31 @@ Class MyOrm {
   {
     if($this->where){
       $sql = $this->where.' AND '.$col.' = '.'?';
-      $this->where = $sql;
-      $this->values[] = $value;
     }else{
       $sql = 'WHERE '.$col.' = '.'?';
-      $this->where = $sql;
-      $this->values = [$value];
     }
+    $this->where = $sql;
+    $this->values[] = $value;
     return $this;
   }
 
   public function whereIn($col, $values)
   {
-    $sql = 'WHERE '.$col.' IN ('.implode(', ', array_map(function () { return '?'; }, $values)).')';
-    $this->whereIn = $sql;
-    $this->values = $values;
+    if($this->where){
+      $sql = $this->where.' AND '.$col.' IN ('.implode(', ', array_map(function () { return '?'; }, $values)).')';
+      $this->where = $sql;
+      $this->values = array_merge($this->values, $values);
+    }else{
+      $sql = 'WHERE '.$col.' IN ('.implode(', ', array_map(function () { return '?'; }, $values)).')';
+      $this->where = $sql;
+      $this->values = array_merge($this->values, $values);
+    }
     return $this;
   }
 
   public function getBindings()
   {
     if($this->where){
-      return $this->values;
-    }
-    if($this->whereIn){
       return $this->values;
     }
   }
