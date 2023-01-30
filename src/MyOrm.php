@@ -8,7 +8,7 @@ Class MyOrm {
   private $col;
   private $value;
   private $values = [];
-  private $where = "";
+  private $where = [];
   private $whereNull = "";
 
   public function toSql()
@@ -24,7 +24,8 @@ Class MyOrm {
       $sql = $sql.' '.$this->from;
     }
     if($this->where){
-      $sql = $sql.' '.$this->where;
+      $w = implode(" AND ", $this->where);
+      $sql = $sql.' WHERE '.$w;
     }
     if($this->whereNull){
       $sql = $sql.' '.$this->whereNull;
@@ -49,24 +50,14 @@ Class MyOrm {
 
   public function where($col, $value)
   {
-    if($this->where){
-      $sql = $this->where.' AND '.$col.' = '.'?';
-    }else{
-      $sql = 'WHERE '.$col.' = '.'?';
-    }
-    $this->where = $sql;
+    $this->where[] = $col.' = '.'?';
     $this->values[] = $value;
     return $this;
   }
 
   public function whereIn($col, $values)
   {
-    if($this->where){
-      $sql = $this->where.' AND '.$col.' IN ('.implode(', ', array_map(function () { return '?'; }, $values)).')';
-    }else{
-      $sql = 'WHERE '.$col.' IN ('.implode(', ', array_map(function () { return '?'; }, $values)).')';
-    }
-    $this->where = $sql;
+    $this->where[] = $col.' IN ('.implode(', ', array_map(function () { return '?'; }, $values)).')';
     $this->values = array_merge($this->values, $values);
     return $this;
   }
@@ -78,17 +69,17 @@ Class MyOrm {
     }
   }
 
-  public function orWhere($col, $value)
-  {
-    if($this->where){
-      $sql = $this->where.' OR '.$col.' = '.'?';
-    }else{
-      $sql = 'WHERE '.$col.' = '.'?';
-    }
-    $this->where = $sql;
-    $this->values[] = $value;
-    return $this;
-  }
+  // public function orWhere($col, $value)
+  // {
+  //   if($this->where){
+  //     $sql = $this->where.' OR '.$col.' = '.'?';
+  //   }else{
+  //     $sql = 'WHERE '.$col.' = '.'?';
+  //   }
+  //   $this->where[] = $sql;
+  //   $this->values[] = $value;
+  //   return $this;
+  // }
 
   public function whereNull($col)
   {
