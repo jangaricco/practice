@@ -15,6 +15,8 @@ Class MyOrm {
   {
     if($this->select){
       $sql = $this->select;
+    }elseif($this->from){
+      $sql = 'SELECT *';
     }else{
       $sql = 'SELECT 1';
     }
@@ -61,13 +63,11 @@ Class MyOrm {
   {
     if($this->where){
       $sql = $this->where.' AND '.$col.' IN ('.implode(', ', array_map(function () { return '?'; }, $values)).')';
-      $this->where = $sql;
-      $this->values = array_merge($this->values, $values);
     }else{
       $sql = 'WHERE '.$col.' IN ('.implode(', ', array_map(function () { return '?'; }, $values)).')';
-      $this->where = $sql;
-      $this->values = array_merge($this->values, $values);
     }
+    $this->where = $sql;
+    $this->values = array_merge($this->values, $values);
     return $this;
   }
 
@@ -82,13 +82,11 @@ Class MyOrm {
   {
     if($this->where){
       $sql = $this->where.' OR '.$col.' = '.'?';
-      $this->where = $sql;
-      $this->values[] = $value;
     }else{
       $sql = 'WHERE '.$col.' = '.'?';
-      $this->where = $sql;
-      $this->values = [$value];
     }
+    $this->where = $sql;
+    $this->values[] = $value;
     return $this;
   }
 
@@ -96,11 +94,10 @@ Class MyOrm {
   {
     if($this->where){
       $sql = $this->where.' AND '.$col.' IS NULL';
-      $this->whereNull = $sql;
     }else{
       $sql = 'WHERE '.$col.' IS NULL';
-      $this->whereNull = $sql;
     }
+    $this->whereNull = $sql;
     return $this;
   }
 }
