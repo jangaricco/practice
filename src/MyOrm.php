@@ -24,8 +24,15 @@ Class MyOrm {
       $sql = $sql.' '.$this->from;
     }
     if($this->where){
-      $w = implode(" AND ", $this->where);
-      $sql = $sql.' WHERE '.$w;
+      $w = "";
+      foreach($this->where as $i => $where){
+        if($i === 0){
+          $w = $w.' '.$where['sql'];
+        }else{
+          $w = $w.' '.$where['AndOr'].' '.$where['sql'];
+        }
+      }
+      $sql = $sql.' WHERE'.$w;
     }
     if($this->whereNull){
       $sql = $sql.' '.$this->whereNull;
@@ -50,14 +57,14 @@ Class MyOrm {
 
   public function where($col, $value)
   {
-    $this->where[] = $col.' = '.'?';
+    $this->where[] = ['sql' => "$col = ?", 'AndOr' => 'AND'];
     $this->values[] = $value;
     return $this;
   }
 
   public function whereIn($col, $values)
   {
-    $this->where[] = $col.' IN ('.implode(', ', array_map(function () { return '?'; }, $values)).')';
+    $this->where[] = ['sql' => $col.' IN ('.implode(', ', array_map(function () { return '?'; }, $values)).')', 'AndOr' => 'AND'];
     $this->values = array_merge($this->values, $values);
     return $this;
   }
@@ -69,26 +76,16 @@ Class MyOrm {
     }
   }
 
-  // public function orWhere($col, $value)
-  // {
-  //   if($this->where){
-  //     $sql = $this->where.' OR '.$col.' = '.'?';
-  //   }else{
-  //     $sql = 'WHERE '.$col.' = '.'?';
-  //   }
-  //   $this->where[] = $sql;
-  //   $this->values[] = $value;
-  //   return $this;
-  // }
+  public function orWhere($col, $value)
+  {
+    $this->where[] = ['sql' => "$col = ?", 'AndOr' => 'OR'];
+    $this->values[] = $value;
+    return $this;
+  }
 
   public function whereNull($col)
   {
-    if($this->where){
-      $sql = $this->where.' AND '.$col.' IS NULL';
-    }else{
-      $sql = 'WHERE '.$col.' IS NULL';
-    }
-    $this->whereNull = $sql;
+    $this->where[] = ['sql' => "$col IS NULL", 'AndOr' => 'AND'];
     return $this;
   }
 }
